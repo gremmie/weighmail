@@ -7,6 +7,14 @@ class ConfigError(Exception):
     pass
 
 
+DEFAULTS = dict(
+    username=None,
+    password=None,
+    host='imap.gmail.com',
+    ssl='True',
+    port='993',
+)
+
 LIMIT_RE = re.compile(r'^(\d+)(GB|MB|KB)?$', re.IGNORECASE)
 
 KB = 1024
@@ -20,26 +28,21 @@ SUFFIX_SIZES = {
     'GB': GB
 }
 
+Label = collections.namedtuple('Label', 'name min max')
+Options = collections.namedtuple('Options', DEFAULTS.keys() + ['labels'])
+
 
 def parse_config_file(path):
     """Parse INI file containing configuration details.
 
     """
     # Parse options file
-    defaults = dict(
-        username=None,
-        password=None,
-        host='imap.gmail.com',
-        ssl='True',
-        port='993',
-    )
-    parser = SafeConfigParser(defaults=defaults, allow_no_value=True)
+    parser = SafeConfigParser(defaults=DEFAULTS)
 
     with open(path, 'r') as fp:
         parser.readfp(fp)
 
     # Build a list of label named tuples
-    Label = collections.namedtuple('Label', 'name min max')
 
     label_set = set(parser.sections()) - {'auth', 'connection'}
     if not label_set:
@@ -57,8 +60,6 @@ def parse_config_file(path):
         labels.append(Label(name=label, min=min_val, max=max_val))
 
     # Build an options object and return it
-    fields = defaults.keys() + ['labels']
-    Options = collections.namedtuple('Options', fields)
 
     opts = Options(
         username=parser.get('auth', 'username'),
