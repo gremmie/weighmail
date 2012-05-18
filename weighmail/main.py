@@ -1,7 +1,9 @@
 from argparse import ArgumentParser
+import getpass
 import os.path
+import sys
 
-from config import parse_config_file
+from config import parse_config_file, ConfigError
 
 
 PROG_DESC = "Adds labels to your Gmail according to message size"
@@ -15,26 +17,48 @@ def parse_args():
         '.weighmail.ini'))
     parser.add_argument('-c', '--config', default=default_config_file,
             help="path to configuration file [default=%(default)s]")
-    parser.add_argument('-u', '--user', default=None,
-            help="Gmail username")
-    parser.add_argument('-p', '--password', default=None,
-            help="Gmail password")
-    parser.add_argument('-H', '--host', default='imap.gmail.com',
-            help="Gmail server name [default=%(default)s]")
-    parser.add_argument('-P', '--port', default=993, type=int,
-            help="Gmail server port [default=%(default)s]")
-    parser.add_argument('-n', '--nossl', action='store_true',
-            help="do not use SSL [default=%(default)s]")
+    parser.add_argument('-u', '--user', help="user name")
+    parser.add_argument('-p', '--password', help="password")
+    parser.add_argument('-H', '--host', help="server name")
+    parser.add_argument('-P', '--port', type=int, help="server port")
+    parser.add_argument('-n', '--nossl', default=None, action='store_true',
+            help="do not use SSL")
 
     args = parser.parse_args()
-    print args
-    print
+
+    # Remove items with a value of None, which indicates the user didn't specify
+    # the option; this makes updating options from the config file easier:
+
+    args = { k : v for k, v in vars(args).items() if v is not None }
+    return args
+
 
 def main():
-    parse_args()
-    opts = parse_config_file('weighmail.ini')
+    # Parse command-line arguments
+    args = parse_args()
+
+    config_file = args.pop('config')
+    no_ssl = args.pop('nossl', False)
+
+    # Read config file:
+    opts = parse_config_file(config_file)
+
+    # Command-line arguments override config file settings
+    opts.update(args)
+
+    if no_ssl:
+        opts['ssl'] = False
+
+    # If the user or password is not specified, prompt for them now
+    for opt in ('user', 'password'):
+        if opts[opt] is None:
+            opts[opt] = getpass.getpass(opt + ': ')
+
     print opts
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except ConfigError, ex:
+        sys.stderr.write("Configuration error: %s\n" % ex)

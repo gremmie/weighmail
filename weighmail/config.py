@@ -8,7 +8,7 @@ class ConfigError(Exception):
 
 
 DEFAULTS = dict(
-    username=None,
+    user=None,
     password=None,
     host='imap.gmail.com',
     ssl='True',
@@ -29,7 +29,6 @@ SUFFIX_SIZES = {
 }
 
 Label = collections.namedtuple('Label', 'name min max')
-Options = collections.namedtuple('Options', DEFAULTS.keys() + ['labels'])
 
 
 def parse_config_file(path):
@@ -39,8 +38,11 @@ def parse_config_file(path):
     # Parse options file
     parser = SafeConfigParser(defaults=DEFAULTS)
 
-    with open(path, 'r') as fp:
-        parser.readfp(fp)
+    try:
+        with open(path, 'r') as fp:
+            parser.readfp(fp)
+    except IOError, ex:
+        raise ConfigError(ex)
 
     # Build a list of label named tuples
 
@@ -61,8 +63,8 @@ def parse_config_file(path):
 
     # Build an options object and return it
 
-    opts = Options(
-        username=parser.get('auth', 'username'),
+    opts = dict(
+        user=parser.get('auth', 'user'),
         password=parser.get('auth', 'password'),
         host=parser.get('connection', 'host'),
         ssl=parser.getboolean('connection', 'ssl'),
