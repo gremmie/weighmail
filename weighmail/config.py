@@ -4,6 +4,7 @@ from utils import make_label
 
 
 DEFAULTS = dict(
+    folder='[Gmail]/All Mail',
     user=None,
     password=None,
     host='imap.gmail.com',
@@ -24,8 +25,9 @@ def parse_config_file(path):
         parser.readfp(fp)
 
     # Build a list of label named tuples
+    ignore_sections = ['options', 'auth', 'connection']
 
-    sections = [s for s in parser.sections() if s not in ('auth', 'connection')]
+    sections = [s for s in parser.sections() if s not in ignore_sections]
 
     labels = [make_label(sec,
                          parser.get(sec, 'min'),
@@ -34,6 +36,7 @@ def parse_config_file(path):
     # Build an options object and return it
 
     opts = dict(
+        folder=parser.get('options', 'folder'),
         user=parser.get('auth', 'user'),
         password=parser.get('auth', 'password'),
         host=parser.get('connection', 'host'),

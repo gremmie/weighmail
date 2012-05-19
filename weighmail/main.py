@@ -33,6 +33,7 @@ def parse_args():
         epilog="Command-line arguments override config file settings.")
 
     parser.add_argument('-c', '--config', help="path to configuration file")
+    parser.add_argument('-f', '--folder', help="mail folder to search")
     parser.add_argument('-u', '--user', help="user name")
     parser.add_argument('-p', '--password', help="password")
     parser.add_argument('-H', '--host', help="server name")
