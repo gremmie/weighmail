@@ -7,6 +7,14 @@ from utils import make_label, AppError
 
 
 PROG_DESC = "Adds labels to your Gmail according to message size"
+HELP_EPILOG = """Command-line arguments override config file settings.
+
+A simple example to label messages between 1 and 5 MB as "big" and
+messages over 5 MB as "huge":
+
+$ %(prog)s --labels big:1MB-5MB huge:5MB-
+ 
+"""
 
 
 class LabelAction(argparse.Action):
@@ -29,17 +37,22 @@ class LabelAction(argparse.Action):
                 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description=PROG_DESC,
-        epilog="Command-line arguments override config file settings.")
+    parser = argparse.ArgumentParser(description=PROG_DESC, epilog=HELP_EPILOG,
+            formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument('-c', '--config', help="path to configuration file")
-    parser.add_argument('-f', '--folder', help="mail folder to search")
-    parser.add_argument('-u', '--user', help="user name")
-    parser.add_argument('-p', '--password', help="password")
-    parser.add_argument('-H', '--host', help="server name")
-    parser.add_argument('-P', '--port', type=int, help="server port")
+    parser.add_argument('-f', '--folder',
+            help="mail folder to search [default: All Mail]")
+    parser.add_argument('-u', '--user',
+            help="user name [default: prompted]")
+    parser.add_argument('-p', '--password',
+            help="password [default: prompted]")
+    parser.add_argument('-H', '--host',
+            help="server name [default: imap.gmail.com]")
+    parser.add_argument('-P', '--port', type=int,
+            help="server port [default: 993]")
     parser.add_argument('-n', '--nossl', default=None, action='store_true',
-            help="do not use SSL")
+            help="do not use SSL [default: SSL is used]")
     parser.add_argument('-l', '--labels', default=[], nargs='+',
             action=LabelAction, help="label specification: name:min-max")
 
