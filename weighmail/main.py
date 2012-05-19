@@ -2,8 +2,12 @@ import argparse
 import getpass
 import sys
 
+import imapclient
+
 import config
 from utils import make_label, AppError
+from observers.console import ConsoleObserver
+from core import weighmail
 
 
 PROG_DESC = "Adds labels to your Gmail according to message size"
@@ -65,6 +69,18 @@ def parse_args():
     return args
 
 
+def create_imap_client(host, port, ssl, user, password):
+    """Creates & returns an instance of an IMAPClient"""
+
+    print "Connecting..."
+
+    client = imapclient.IMAPClient(host=host, port=port, ssl=ssl)
+    client.login(username=user, password=password)
+
+    print "Connected."
+    return client
+
+
 def main():
     # Parse command-line arguments
     args = parse_args()
@@ -89,10 +105,18 @@ def main():
         if opt not in opts or opts[opt] is None:
             opts[opt] = getpass.getpass(opt + ': ')
 
-    print opts
-
     if 'labels' not in opts or not opts['labels']:
         raise AppError("Please specify some label definitions")
+
+    imap_args = opts.copy()
+    del imap_args['folder']
+    del imap_args['labels']
+
+    client = create_imap_client(**imap_args)
+    observer = ConsoleObserver()
+
+    weighmail(client, opts['folder'], opts['labels'], observer)
+    client.logout()
 
 
 if __name__ == '__main__':
@@ -100,3 +124,7 @@ if __name__ == '__main__':
         main()
     except (IOError, AppError), ex:
         sys.stderr.write("%s\n" % ex)
+    except imapclient.IMAPClient.Error, ex:
+        sys.stderr.write("IMAP Error: %s\n" % ex)
+    except KeyboardInterrupt:
+        sys.stderr.write('Interrupted\n')
