@@ -23,6 +23,7 @@ setup(
     },
     install_requires=[
         'IMAPClient >= 0.9',
+        'distribute',
     ],
     classifiers = [
         'Development Status :: 3 - Alpha',
