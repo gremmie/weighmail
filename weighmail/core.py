@@ -39,10 +39,11 @@ def apply_label(imap, label, observer=None):
 
     msgs = imap.search(criteria)
 
-    if observer is not None:
-        observer.labeling(label.name, len(msgs))
+    if len(msgs) > 0:
+        if observer is not None:
+            observer.labeling(label.name, len(msgs))
 
-    imap.add_gmail_labels(msgs, [label.name])
+        imap.add_gmail_labels(msgs, [label.name])
 
-    if observer is not None:
-        observer.done_labeling(label.name, len(msgs))
+        if observer is not None:
+            observer.done_labeling(label.name, len(msgs))
