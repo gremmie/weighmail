@@ -8,7 +8,6 @@ An application to label your Gmail messages according to size
 :Version: 0.1.0
 :Date: May 20, 2012
 :Home Page: https://bitbucket.org/bgneal/weighmail/
-:Download: TODO
 :License: New BSD License (see LICENSE.txt)
 :Support: https://bitbucket.org/bgneal/weighmail/issues
 
