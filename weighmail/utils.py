@@ -13,7 +13,7 @@ LIMIT_RE = re.compile(r'^(\d+)(GB|MB|KB)?$', re.IGNORECASE)
 
 KB = 1024
 MB = KB * KB
-GB = MB * MB
+GB = MB * KB
 
 SUFFIX_SIZES = {
     None: 1,
