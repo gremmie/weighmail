@@ -6,10 +6,10 @@ An application to label your Gmail messages according to size
 
 :Author: Brian Neal <bgneal@gmail.com>
 :Version: 0.1.0
-:Date: May 19, 2012
+:Date: May 20, 2012
 :Home Page: https://bitbucket.org/bgneal/weighmail/
 :Download: TODO
-:License: New BSD License (see COPYING)
+:License: New BSD License (see LICENSE.txt)
 :Support: https://bitbucket.org/bgneal/weighmail/issues
 
 

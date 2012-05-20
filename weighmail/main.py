@@ -100,13 +100,14 @@ def main():
     if no_ssl:
         opts['ssl'] = False
 
+    # Check for label rules
+    if 'labels' not in opts or not opts['labels']:
+        raise AppError("Please specify some label definitions")
+
     # If the user or password is not specified, prompt for them now
     for opt in ('user', 'password'):
         if opt not in opts or opts[opt] is None:
             opts[opt] = getpass.getpass(opt + ': ')
-
-    if 'labels' not in opts or not opts['labels']:
-        raise AppError("Please specify some label definitions")
 
     imap_args = opts.copy()
     del imap_args['folder']
@@ -119,7 +120,7 @@ def main():
     client.logout()
 
 
-if __name__ == '__main__':
+def console_main():
     try:
         main()
     except (IOError, AppError), ex:
@@ -128,3 +129,7 @@ if __name__ == '__main__':
         sys.stderr.write("IMAP Error: %s\n" % ex)
     except KeyboardInterrupt:
         sys.stderr.write('Interrupted\n')
+
+
+if __name__ == '__main__':
+    console_main()

@@ -1,6 +1,6 @@
 import datetime
 
-from observers import BaseObserver
+from . import BaseObserver
 
 class ConsoleObserver(BaseObserver):
     """Console observer class; outputs status to the console."""
