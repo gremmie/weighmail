@@ -27,7 +27,7 @@ Installation
 
 ``weighmail`` can be installed using Pip_::
 
-   $ pip install weighmail    # TODO: get up on PyPI 
+   $ pip install weighmail
 
 Alternatively you can download a tarball and install with::
 
